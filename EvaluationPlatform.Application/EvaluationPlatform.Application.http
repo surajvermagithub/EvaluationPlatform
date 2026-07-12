@@ -1,0 +1,6 @@
+@EvaluationPlatform.Application_HostAddress = http://localhost:5031
+
+GET {{EvaluationPlatform.Application_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
