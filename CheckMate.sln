@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37216.2 d17.14
+VisualStudioVersion = 17.14.37216.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvaluationPlatform.API", "EvaluationPlatform.API\EvaluationPlatform.API.csproj", "{19E3840B-9FD2-4833-9115-0715B633C810}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckMate.API", "EvaluationPlatform.API\CheckMate.API.csproj", "{19E3840B-9FD2-4833-9115-0715B633C810}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvaluationPlatform.Application", "EvaluationPlatform.Application\EvaluationPlatform.Application.csproj", "{3B50D5A2-8F44-4EE8-B5AB-04153C52BD20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckMate.Application", "EvaluationPlatform.Application\CheckMate.Application.csproj", "{3B50D5A2-8F44-4EE8-B5AB-04153C52BD20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvaluationPlatform.Domain", "EvaluationPlatform.Domain\EvaluationPlatform.Domain.csproj", "{C0756201-FDD1-47F8-BB51-694BEA4048C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckMate.Domain", "EvaluationPlatform.Domain\CheckMate.Domain.csproj", "{C0756201-FDD1-47F8-BB51-694BEA4048C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EvaluationPlatform.Infrastructure", "EvaluationPlatform.Infrastructure\EvaluationPlatform.Infrastructure.csproj", "{8D0CFB11-CD14-4B26-A8E5-BF350CE3590C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckMate.Infrastructure", "EvaluationPlatform.Infrastructure\CheckMate.Infrastructure.csproj", "{8D0CFB11-CD14-4B26-A8E5-BF350CE3590C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

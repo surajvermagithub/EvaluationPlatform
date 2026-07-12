@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EvaluationPlatform.Application\EvaluationPlatform.Application.csproj" />
-    <ProjectReference Include="..\EvaluationPlatform.Domain\EvaluationPlatform.Domain.csproj" />
+    <ProjectReference Include="..\EvaluationPlatform.Application\CheckMate.Application.csproj" />
+    <ProjectReference Include="..\EvaluationPlatform.Domain\CheckMate.Domain.csproj" />
+    <ProjectReference Include="..\EvaluationPlatform.Infrastructure\CheckMate.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
