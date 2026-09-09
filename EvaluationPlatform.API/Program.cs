@@ -1,4 +1,9 @@
+using CheckMate.Application.Interfaces.Repositories;
+using CheckMate.Application.Interfaces.Services;
 using CheckMate.Infrastructure.Data;
+using CheckMate.Infrastructure.Repositories;
+using CheckMate.Infrastructure.Services;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +18,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
