@@ -42,23 +42,31 @@ namespace CheckMate.Application.Interfaces.Services
             string passwordHash =
                 _passwordHasher.HashPassword(request.Password);
 
+            var superAdminRole =
+    await _userRepository.GetRoleByNameAsync("SuperAdmin");
+
+            if (superAdminRole == null)
+            {
+                throw new InvalidOperationException(
+                    "SuperAdmin role is not configured.");
+            }
+
             // 4. Create User entity
+         
             var user = new User
             {
                 FullName = request.FullName,
                 Email = request.Email,
                 Mobile = request.Mobile,
                 PasswordHash = passwordHash,
-
-                // SuperAdmin is platform-level
                 InstituteId = null,
-
-                // We will use the SuperAdmin role
-                RoleId = 1
+                RoleId = superAdminRole.Id
             };
 
             // 5. Save user
             await _userRepository.AddAsync(user);
         }
+
+
     }
 }

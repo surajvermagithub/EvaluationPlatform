@@ -33,5 +33,13 @@ namespace CheckMate.Infrastructure.Repositories
 
             return user;
         }
+
+        public async Task<Role?> GetRoleByNameAsync(string roleName)
+        {
+            return await _context.Roles
+                .FirstOrDefaultAsync(r =>
+                    r.Name == roleName &&
+                    !r.IsDeleted);
+        }
     }
 }

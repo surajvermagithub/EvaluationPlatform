@@ -10,5 +10,6 @@ namespace CheckMate.Application.Interfaces.Repositories
         Task<User?> GetByEmailAsync(string email);
 
         Task<User> AddAsync(User user);
+        Task<Role?> GetRoleByNameAsync(string roleName);
     }
 }
