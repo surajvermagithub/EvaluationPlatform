@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using CheckMate.Domain.Entities;
 
 namespace CheckMate.Infrastructure.Data
@@ -82,7 +81,37 @@ namespace CheckMate.Infrastructure.Data
             modelBuilder.Entity<Role>()
                 .Property(r => r.Description)
                 .HasMaxLength(250);
-        }
 
+            // Seed initial roles
+            modelBuilder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = 1,
+                    Name = "SuperAdmin",
+                    Description = "Super Administrator with full system access",
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedOn = DateTime.UtcNow
+                },
+                new Role
+                {
+                    Id = 2,
+                    Name = "Admin",
+                    Description = "Administrator with limited access",
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedOn = DateTime.UtcNow
+                },
+                new Role
+                {
+                    Id = 3,
+                    Name = "User",
+                    Description = "Regular user with basic access",
+                    IsActive = true,
+                    IsDeleted = false,
+                    CreatedOn = DateTime.UtcNow
+                }
+            );
+        }
     }
 }

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\EvaluationPlatform.Domain\CheckMate.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

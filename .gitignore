@@ -3,3 +3,19 @@ bin/
 obj/
 *.user
 *.suo
+
+# Logs
+Logs/
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local settings
+appsettings.local.json

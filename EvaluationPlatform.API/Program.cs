@@ -1,3 +1,4 @@
+using CheckMate.API.Middleware;
 using CheckMate.Application.Interfaces.Repositories;
 using CheckMate.Application.Interfaces.Services;
 using CheckMate.Infrastructure.Data;
@@ -5,9 +6,30 @@ using CheckMate.Infrastructure.Repositories;
 using CheckMate.Infrastructure.Services;
 
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+
+var projectDirectory = Directory.GetParent(
+    AppContext.BaseDirectory)!
+    .Parent!
+    .Parent!
+    .Parent!
+    .FullName;
+
+var logPath = Path.Combine(projectDirectory, "Logs");
+
+Directory.CreateDirectory(logPath);
+
+var logFileName = $"log-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        Path.Combine(logPath, logFileName))
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -31,11 +53,24 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting EvaluationPlatform API");
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
