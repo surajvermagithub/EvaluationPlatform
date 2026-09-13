@@ -1,0 +1,1081 @@
+You are continuing an existing project with me.
+
+PROJECT NAME:
+CheckMate
+
+REPOSITORY / SOLUTION:
+EvaluationPlatform
+
+PURPOSE:
+CheckMate is an examination booklet evaluation platform for coaching institutes and colleges.
+
+Physical process:
+Student writes examination booklet
+        ↓
+Booklet is scanned
+        ↓
+PDF is created for the booklet
+        ↓
+Teacher logs in
+        ↓
+Teacher receives an anonymous booklet
+        ↓
+Teacher evaluates pages
+        ↓
+Teacher circles/marks answers and adds remarks
+        ↓
+Teacher submits
+        ↓
+Next booklet automatically appears
+        ↓
+Marks/results are stored
+        ↓
+Later moderator/student can see marks and remarks
+
+IMPORTANT PRODUCT REQUIREMENT:
+During evaluation, the teacher should NOT see the student's identity such as roll number/name.
+
+LONG-TERM PRODUCT:
+- Multi-institute SaaS/platform
+- Digital storage of scanned examination booklets
+- Result/Excel/degree generation
+- AI-assisted evaluation in the future
+- AI may suggest marks, missing points, answer relevance, remarks, etc.
+- Teacher remains the final decision-maker
+
+IMPORTANT:
+AI is NOT the first thing we are implementing.
+First build a solid working application, then integrate a small practical AI feature so I understand AI integration concretely.
+
+
+==================================================
+MY TECHNICAL BACKGROUND
+==================================================
+
+I am a .NET developer with around 2.5+ years of hands-on experience.
+
+I know:
+- C#
+- ASP.NET MVC
+- ASP.NET Core
+- Web API
+- SQL Server
+- Entity Framework Core
+- EF Core basics
+- ADO.NET
+- Stored Procedures
+- JavaScript/jQuery
+- HTML/CSS
+- JWT basics
+- Git/GitHub
+- Serilog
+- Middleware
+- Deployment basics
+
+I am relatively new to React.
+
+I want this project to also improve my interview-level knowledge and practical ownership-level .NET skills.
+
+
+==================================================
+HOW I WANT TO LEARN
+==================================================
+
+VERY IMPORTANT:
+
+Do NOT give me huge explanations or 20 steps at once.
+
+I prefer:
+1. Explain what we are about to do.
+2. Explain WHY we need it.
+3. Explain where it belongs in the architecture.
+4. Give a small amount of code.
+5. Let me implement it.
+6. I will tell you the result/error.
+7. Then continue to the next step.
+
+I prefer practical explanations over theoretical lectures.
+
+When giving code:
+- Give complete code for the relevant file/method when useful.
+- Tell me exactly which project/folder/file it belongs to.
+- Don't randomly introduce unnecessary patterns.
+- Don't over-engineer.
+
+I want to understand the reason behind the code, not just copy/paste it.
+
+
+==================================================
+ARCHITECTURE
+==================================================
+
+We are NOT building microservices.
+
+We are building:
+
+"Modular Monolith using practical Clean Architecture principles."
+
+Solution contains 4 projects:
+
+EvaluationPlatform.API
+EvaluationPlatform.Application
+EvaluationPlatform.Domain
+EvaluationPlatform.Infrastructure
+
+
+DEPENDENCY DIRECTION:
+
+API
+ ↓
+Application
+ ↓
+Domain
+
+API
+ ↓
+Infrastructure
+
+Infrastructure
+ ↓
+Application
+ ↓
+Domain
+
+Domain must not depend on Infrastructure.
+
+Important understanding:
+- Domain contains business entities/rules.
+- Application contains use cases, DTOs, interfaces and application services.
+- Infrastructure contains EF Core, DbContext, repositories, password hashing, etc.
+- API contains controllers and application startup/composition root.
+
+Folders alone don't enforce architecture.
+Separate projects enforce dependency boundaries through the compiler.
+
+We are NOT using CQRS/MediatR unless there is a real reason.
+Do not introduce unnecessary enterprise patterns.
+
+
+==================================================
+CURRENT PROJECT STRUCTURE
+==================================================
+
+EvaluationPlatform.API
+    Controllers
+    Middleware
+    Program.cs
+    appsettings.json
+
+EvaluationPlatform.Application
+    DTOs
+    Interfaces
+    Services
+
+EvaluationPlatform.Domain
+    Common
+    Entities
+
+EvaluationPlatform.Infrastructure
+    Data
+    Repositories
+    Services
+
+
+==================================================
+CURRENT DOMAIN ENTITIES
+==================================================
+
+BaseEntity:
+
+namespace EvaluationPlatform.Domain.Common;
+
+public abstract class BaseEntity
+{
+    public int Id { get; set; }
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+    public int? CreatedBy { get; set; }
+    public DateTime? UpdatedOn { get; set; }
+    public int? UpdatedBy { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool IsDeleted { get; set; } = false;
+}
+
+
+Institute:
+
+using EvaluationPlatform.Domain.Common;
+
+namespace EvaluationPlatform.Domain.Entities;
+
+public class Institute : BaseEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Mobile { get; set; } = string.Empty;
+    public string AddressLine1 { get; set; } = string.Empty;
+    public string? AddressLine2 { get; set; }
+    public string City { get; set; } = string.Empty;
+    public string State { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string PinCode { get; set; } = string.Empty;
+
+    public ICollection<User> Users { get; set; } = new List<User>();
+}
+
+
+Role:
+
+using EvaluationPlatform.Domain.Common;
+
+namespace EvaluationPlatform.Domain.Entities;
+
+public class Role : BaseEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+
+    public ICollection<User> Users { get; set; } = new List<User>();
+}
+
+
+User:
+
+using EvaluationPlatform.Domain.Common;
+
+namespace EvaluationPlatform.Domain.Entities;
+
+public class User : BaseEntity
+{
+    public int? InstituteId { get; set; }
+    public int RoleId { get; set; }
+
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Mobile { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+
+    public Institute? Institute { get; set; }
+    public Role Role { get; set; } = null!;
+}
+
+
+IMPORTANT USER/INSTITUTE DESIGN:
+
+InstituteId is nullable.
+
+Why?
+
+SuperAdmin is a platform-level user and is NOT tied to an institute.
+
+Therefore:
+
+SuperAdmin:
+InstituteId = null
+
+Institute Admin:
+InstituteId = specific institute
+
+Teacher:
+InstituteId = specific institute
+
+
+==================================================
+DATABASE
+==================================================
+
+Database:
+SQL Server
+
+EF Core is being used.
+
+ApplicationDbContext is inside:
+
+EvaluationPlatform.Infrastructure
+    → Data
+        → ApplicationDbContext.cs
+
+Current relationships:
+
+User → Institute:
+many Users belong to one Institute.
+
+User → Role:
+many Users belong to one Role.
+
+Delete behavior is Restrict.
+
+
+CURRENT ApplicationDbContext BASELINE:
+
+using EvaluationPlatform.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace EvaluationPlatform.Infrastructure.Data;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<User> Users => Set<User>();
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Institute> Institutes => Set<Institute>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Institute)
+            .WithMany(i => i.Users)
+            .HasForeignKey(u => u.InstituteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Role)
+            .WithMany(r => r.Users)
+            .HasForeignKey(u => u.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Fluent API validation/constraints also exist.
+        // Institute.Code should be unique.
+    }
+}
+
+
+==================================================
+ROLE SEEDING
+==================================================
+
+We seeded initial roles using Fluent API HasData.
+
+Current roles:
+
+Id = 1
+Name = SuperAdmin
+
+Id = 2
+Name = Admin
+
+Id = 3
+Name = User
+
+
+Current seed:
+
+modelBuilder.Entity<Role>().HasData(
+    new Role
+    {
+        Id = 1,
+        Name = "SuperAdmin",
+        Description = "Super Administrator with full system access",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    },
+    new Role
+    {
+        Id = 2,
+        Name = "Admin",
+        Description = "Administrator with limited access",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    },
+    new Role
+    {
+        Id = 3,
+        Name = "User",
+        Description = "Regular user with basic access",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    }
+);
+
+NOTE:
+The original code used DateTime.UtcNow, but deterministic fixed CreatedOn was recommended for HasData.
+
+IMPORTANT:
+Role IDs should NOT conceptually be assumed to always be 1,2,3.
+We currently know:
+1 = SuperAdmin
+because we explicitly seeded it.
+
+Later we want to avoid magic numbers and retrieve the role by name.
+
+
+==================================================
+EF CORE MIGRATIONS
+==================================================
+
+EF Core migration has already been created/applied for the entities.
+
+Database and tables already exist.
+
+When HasData is changed:
+Create a new migration and Update-Database.
+
+Do not tell me to manually create database/tables unless there is a specific reason.
+
+
+==================================================
+REGISTRATION FLOW CURRENTLY IMPLEMENTED
+==================================================
+
+The first authentication feature is:
+
+ONE-TIME SUPERADMIN REGISTRATION.
+
+Business rule:
+
+There can only be one SuperAdmin.
+
+After SuperAdmin registration:
+SuperAdmin will eventually log in.
+
+Then SuperAdmin can create Institutes and Institute Admins.
+
+Then Institute Admin can create Teachers.
+
+Then Teachers log in and evaluate booklets.
+
+
+==================================================
+CURRENT DTO
+==================================================
+
+Application/DTOs/Auth/RegisterAdminRequest.cs
+
+namespace EvaluationPlatform.Application.DTOs.Auth;
+
+public class RegisterAdminRequest
+{
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Mobile { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+
+==================================================
+CURRENT REPOSITORY INTERFACE
+==================================================
+
+Application/Interfaces/Repositories/IUserRepository.cs
+
+Current:
+
+using EvaluationPlatform.Domain.Entities;
+
+namespace EvaluationPlatform.Application.Interfaces.Repositories;
+
+public interface IUserRepository
+{
+    Task<bool> SuperAdminExistsAsync();
+    Task<User?> GetByEmailAsync(string email);
+    Task<Role?> GetRoleByNameAsync(string roleName);
+    Task<User> AddAsync(User user);
+}
+
+
+==================================================
+CURRENT USER REPOSITORY
+==================================================
+
+Infrastructure/Repositories/UserRepository.cs
+
+Current important methods:
+
+public async Task<bool> SuperAdminExistsAsync()
+{
+    return await _context.Users
+        .AnyAsync(u => u.Role.Name == "SuperAdmin" && !u.IsDeleted);
+}
+
+public async Task<User?> GetByEmailAsync(string email)
+{
+    return await _context.Users
+        .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+}
+
+Role lookup was added conceptually:
+
+public async Task<Role?> GetRoleByNameAsync(string roleName)
+{
+    return await _context.Roles
+        .FirstOrDefaultAsync(r =>
+            r.Name == roleName &&
+            !r.IsDeleted);
+}
+
+Add:
+
+public async Task<User> AddAsync(User user)
+{
+    await _context.Users.AddAsync(user);
+    await _context.SaveChangesAsync();
+    return user;
+}
+
+
+==================================================
+PASSWORD HASHING
+==================================================
+
+Application defines the abstraction:
+
+Application/Interfaces/Services/IPasswordHasher.cs
+
+namespace EvaluationPlatform.Application.Interfaces.Services;
+
+public interface IPasswordHasher
+{
+    string HashPassword(string password);
+}
+
+
+Infrastructure implements it:
+
+Infrastructure/Services/PasswordHasher.cs
+
+using EvaluationPlatform.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
+
+namespace EvaluationPlatform.Infrastructure.Services;
+
+public class PasswordHasher : IPasswordHasher
+{
+    private readonly PasswordHasher<object> _hasher = new();
+
+    public string HashPassword(string password)
+    {
+        return _hasher.HashPassword(null!, password);
+    }
+}
+
+IMPORTANT:
+Passwords must NEVER be stored as plain text.
+
+
+==================================================
+AUTH SERVICE
+==================================================
+
+Application/Interfaces/Services/IAuthService.cs
+
+namespace EvaluationPlatform.Application.Interfaces.Services;
+
+public interface IAuthService
+{
+    Task RegisterAdminAsync(RegisterAdminRequest request);
+}
+
+
+Application/Services/AuthService.cs
+
+Current conceptual flow:
+
+1. Check whether SuperAdmin already exists.
+2. Check whether email already exists.
+3. Find SuperAdmin role.
+4. Hash password.
+5. Create User.
+6. InstituteId = null.
+7. RoleId = SuperAdmin role's database ID.
+8. Save user.
+
+The older version used:
+
+RoleId = 1
+
+We are improving this to avoid hardcoding the role ID.
+
+Current intended code:
+
+var superAdminRole =
+    await _userRepository.GetRoleByNameAsync("SuperAdmin");
+
+if (superAdminRole == null)
+{
+    throw new InvalidOperationException(
+        "SuperAdmin role is not configured.");
+}
+
+Then:
+
+var user = new User
+{
+    FullName = request.FullName,
+    Email = request.Email,
+    Mobile = request.Mobile,
+    PasswordHash = passwordHash,
+    InstituteId = null,
+    RoleId = superAdminRole.Id
+};
+
+await _userRepository.AddAsync(user);
+
+
+==================================================
+AUTH CONTROLLER
+==================================================
+
+API/Controllers/AuthController.cs
+
+Current:
+
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
+{
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService)
+    {
+        _authService = authService;
+    }
+
+    [HttpPost("register-admin")]
+    public async Task<IActionResult> RegisterAdmin(
+        RegisterAdminRequest request)
+    {
+        await _authService.RegisterAdminAsync(request);
+
+        return Ok(new
+        {
+            message = "SuperAdmin registered successfully."
+        });
+    }
+}
+
+
+==================================================
+DEPENDENCY INJECTION
+==================================================
+
+Program.cs contains:
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+DbContext:
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+==================================================
+MIDDLEWARE
+==================================================
+
+Global exception middleware exists.
+
+API/Middleware/ExceptionMiddleware.cs
+
+Purpose:
+- Catch unhandled exceptions centrally.
+- Log technical details.
+- Return safe generic error response to client.
+
+Current conceptual behavior:
+
+try
+{
+    await _next(context);
+}
+catch (Exception ex)
+{
+    _logger.LogError(
+        ex,
+        "Unhandled exception. Method: {Method}, Path: {Path}",
+        context.Request.Method,
+        context.Request.Path);
+
+    await HandleExceptionAsync(context);
+}
+
+Client receives something like:
+
+{
+    "success": false,
+    "message": "An unexpected error occurred."
+}
+
+Do NOT expose database exception details to production users.
+
+During development, inspect:
+ex.InnerException.Message
+
+Use Visual Studio debugger/breakpoints when needed.
+
+
+==================================================
+SERILOG
+==================================================
+
+Serilog is installed and configured.
+
+Packages:
+- Serilog.AspNetCore
+- Serilog.Sinks.Console
+- Serilog.Sinks.File
+
+Development requirement:
+Create a new log file for every application startup.
+
+Logs should be inside:
+
+EvaluationPlatform.API
+    └── Logs
+
+not inside bin.
+
+Current development approach calculates the API project directory from AppContext.BaseDirectory.
+
+Example:
+
+var projectDirectory = Directory.GetParent(
+    AppContext.BaseDirectory)!
+    .Parent!
+    .Parent!
+    .Parent!
+    .FullName;
+
+var logPath = Path.Combine(projectDirectory, "Logs");
+
+Directory.CreateDirectory(logPath);
+
+var logFileName = $"log-{DateTime.Now:yyyyMMdd-HHmmss}.txt";
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        Path.Combine(logPath, logFileName))
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+At application end:
+
+try
+{
+    Log.Information("Starting EvaluationPlatform API");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+This is mainly for local development/learning.
+Deployment logging can be handled later.
+
+
+==================================================
+IMPORTANT ERROR WE ALREADY SOLVED
+==================================================
+
+During first registration, we got a DbUpdateException caused by a foreign-key problem.
+
+Reason:
+User was being inserted with:
+
+RoleId = 1
+
+but Role ID 1 did not exist in Roles table.
+
+We then seeded roles using HasData.
+
+Also noticed that first User ID was 5 instead of 1.
+
+Explanation:
+SQL Server Identity columns do NOT guarantee gapless IDs.
+Previous inserts/deletes/migrations can cause the next ID to be 5.
+
+This is normal.
+
+Do NOT reset identity just because IDs are not consecutive.
+
+
+==================================================
+WHY USER → ROLE EXISTS
+==================================================
+
+The important relationship is:
+
+Users
+    RoleId
+       ↓
+Roles
+    Id
+    Name
+
+Example:
+
+User:
+Suraj
+RoleId = 1
+
+Role:
+Id = 1
+Name = SuperAdmin
+
+This relationship will eventually be used for:
+- Authentication
+- JWT claims
+- Authorization
+- Role-based API access
+- SuperAdmin permissions
+- Admin permissions
+- Teacher permissions
+- Moderator permissions
+
+The user understands this concept and asked specifically why finding SuperAdmin RoleId is useful.
+
+The explanation:
+The application needs to establish the User → Role relationship.
+Later authorization needs to know what role the logged-in user has.
+
+
+==================================================
+CURRENT BUSINESS ROLE DIRECTION
+==================================================
+
+Current seeded roles are:
+- SuperAdmin
+- Admin
+- User
+
+BUT this is not necessarily the final role structure.
+
+The actual CheckMate business will likely need roles such as:
+- SuperAdmin
+- InstituteAdmin/Admin
+- Teacher
+- Moderator
+
+Do NOT blindly change this now.
+Discuss the final role structure before changing it.
+
+Teacher is especially important because teachers perform booklet evaluation.
+
+Moderator/student workflows come later.
+
+
+==================================================
+IMPORTANT PRODUCT / SECURITY DESIGN
+==================================================
+
+SuperAdmin:
+- Platform level
+- InstituteId = null
+- Can eventually manage institutes
+
+Institute Admin:
+- Belongs to one institute
+- Can manage users/teachers within that institute
+
+Teacher:
+- Belongs to one institute
+- Evaluates assigned anonymous booklets
+
+Teacher should not see student identity while evaluating.
+
+
+==================================================
+CURRENT HTTP FLOW UNDERSTANDING
+==================================================
+
+We have already discussed:
+
+HTTP Request
+    ↓
+Kestrel
+    ↓
+Middleware
+    ↓
+Routing
+    ↓
+Controller
+    ↓
+Application Service
+    ↓
+Repository Interface
+    ↓
+Infrastructure Repository
+    ↓
+DbContext
+    ↓
+EF Core
+    ↓
+SQL Server
+    ↓
+HTTP Response
+
+
+==================================================
+WHAT HAS BEEN COMPLETED
+==================================================
+
+Completed:
+
+[✓] Solution created
+[✓] Four-project architecture
+[✓] Clean Architecture dependency direction
+[✓] Domain BaseEntity
+[✓] Institute entity
+[✓] User entity
+[✓] Role entity
+[✓] EF Core DbContext
+[✓] SQL Server connection
+[✓] EF Core migration/database
+[✓] Relationships
+[✓] Fluent API configuration
+[✓] Role seeding
+[✓] Global exception middleware
+[✓] Serilog
+[✓] Log files
+[✓] RegisterAdminRequest DTO
+[✓] IUserRepository
+[✓] UserRepository
+[✓] Password hashing abstraction
+[✓] Password hashing implementation
+[✓] IAuthService
+[✓] AuthService
+[✓] AuthController
+[✓] Dependency Injection
+[✓] Initial SuperAdmin registration flow
+[✓] Understood FK relationship between User and Role
+[✓] Understood why role ID should not ideally be hardcoded
+
+
+==================================================
+CURRENT EXACT STOPPING POINT
+==================================================
+
+We were discussing this:
+
+Why are we finding the RoleId of SuperAdmin?
+
+Answer:
+Because User stores RoleId as a foreign key.
+We need to create:
+
+User
+    ↓
+RoleId
+    ↓
+SuperAdmin role
+
+The next logical work is to continue making registration production-quality.
+
+Possible immediate next step:
+Validation and proper API response handling for registration.
+
+But do NOT jump ahead automatically.
+First explain what the next step is and why it is needed.
+
+==================================================
+FUTURE IMPLEMENTATION ORDER
+==================================================
+
+Do not implement everything at once.
+
+Likely order:
+
+1. Finish/clean SuperAdmin registration
+2. Validation
+3. Proper API response/error handling
+4. Login
+5. Password verification
+6. JWT generation
+7. Authentication middleware/configuration
+8. Role-based authorization
+9. SuperAdmin → create Institute
+10. SuperAdmin → create Institute Admin
+11. Institute Admin → create Teachers
+12. Teacher login
+13. Booklet/evaluation domain design
+14. Anonymous booklet assignment
+15. PDF/page evaluation workflow
+16. Marks/remarks
+17. Moderator/student acknowledgement
+18. Results/Excel generation
+19. React frontend
+20. Small practical AI integration
+21. Testing
+22. Deployment
+
+
+==================================================
+THINGS WE SHOULD NOT DO WITHOUT DISCUSSION
+==================================================
+
+Do NOT introduce:
+- Microservices
+- CQRS
+- MediatR
+- Repository pattern beyond what is useful
+- Generic repository just for the sake of it
+- Over-engineered domain patterns
+- Excessive abstraction
+- AI before core workflow works
+
+We want practical, interview-relevant, production-oriented architecture.
+
+
+==================================================
+HOW TO CONTINUE THIS CHAT
+==================================================
+
+When I paste this SOP into a new chat:
+
+1. Read the entire SOP.
+2. Treat it as the current project state.
+3. Do not ask me to explain the project again.
+4. Do not restart from the beginning.
+5. Continue from "CURRENT EXACT STOPPING POINT."
+6. Keep answers small and step-by-step.
+7. Explain WHY before giving code.
+8. Tell me exact file/project location for code.
+9. Don't change previously agreed architecture without discussing it.
+10. If you think something should be changed, explain why first.
+11. If I show an error, debug that error before moving forward.
+12. Keep the CheckMate business requirements in mind when designing backend features.
+13. Remember that I want to learn the concepts, not merely copy code.
+
+When uncertain about project state, ask for the current relevant file/code rather than assuming it changed.
+
+
+==================================================
+IMPORTANT CONVERSATION STYLE
+==================================================
+
+Talk to me normally and directly.
+
+I often ask:
+"why do we need this?"
+"what is the use?"
+"where does this code go?"
+"why are we doing this?"
+
+Answer those questions clearly.
+
+Don't give me a giant textbook answer.
+
+One feature at a time.
+
+The goal is:
+BUILD THE PROJECT
++
+UNDERSTAND THE ARCHITECTURE
++
+BECOME STRONGER AS A .NET DEVELOPER
