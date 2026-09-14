@@ -1,4 +1,5 @@
 ﻿using CheckMate.Application.DTOs.Auth;
+using CheckMate.Application.Exceptions;
 using CheckMate.Application.Interfaces.Repositories;
 using CheckMate.Domain.Entities;
 
@@ -24,8 +25,7 @@ namespace CheckMate.Application.Interfaces.Services
 
             if (adminExists)
             {
-                throw new InvalidOperationException(
-                    "SuperAdmin already exists.");
+                throw new ConflictException("SuperAdmin already exists.");
             }
 
             // 2. Check whether email is already used
@@ -34,8 +34,7 @@ namespace CheckMate.Application.Interfaces.Services
 
             if (existingUser != null)
             {
-                throw new InvalidOperationException(
-                    "Email is already registered.");
+                throw new ConflictException("Email is already registered.");
             }
 
             // 3. Hash password

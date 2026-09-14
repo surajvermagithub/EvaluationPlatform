@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CheckMate.Application.Exceptions;
+using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Text.Json;
 
@@ -31,8 +32,23 @@ namespace CheckMate.API.Middleware
                     context.Request.Method,
                     context.Request.Path);
 
+                if (ex is ConflictException)
+                {
+                    context.Response.StatusCode = StatusCodes.Status409Conflict;
+                    context.Response.ContentType = "application/json";
+
+                    var response = new
+                    {
+                        success = false,
+                        message = ex.Message
+                    };
+
+                    await context.Response.WriteAsJsonAsync(response);
+                    return;
+                }
+
                 await HandleExceptionAsync(context, ex, _logger);
-            }
+            }           
         }
 
         private static async Task HandleExceptionAsync(
