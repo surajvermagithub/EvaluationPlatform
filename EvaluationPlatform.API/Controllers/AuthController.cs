@@ -27,5 +27,20 @@ namespace CheckMate.API.Controllers
                 message = "SuperAdmin registered successfully."
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(
+        LoginRequest request)
+        {
+            var response =
+                await _authService.LoginAsync(request);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Login successful.",
+                data = response
+            });
+        }
     }
 }

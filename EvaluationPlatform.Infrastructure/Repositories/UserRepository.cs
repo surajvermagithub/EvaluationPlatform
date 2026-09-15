@@ -23,7 +23,11 @@ namespace CheckMate.Infrastructure.Repositories
         public async Task<User?> GetByEmailAsync(string email)
         {
             return await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+                .Include(u => u.Role)
+        .FirstOrDefaultAsync(u =>
+            u.Email == email &&
+            !u.IsDeleted &&
+            u.IsActive);
         }
 
         public async Task<User> AddAsync(User user)

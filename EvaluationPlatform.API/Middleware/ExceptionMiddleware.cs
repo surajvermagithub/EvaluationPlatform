@@ -34,16 +34,35 @@ namespace CheckMate.API.Middleware
 
                 if (ex is ConflictException)
                 {
-                    context.Response.StatusCode = StatusCodes.Status409Conflict;
-                    context.Response.ContentType = "application/json";
+                    context.Response.StatusCode =
+                        StatusCodes.Status409Conflict;
 
-                    var response = new
+                    context.Response.ContentType =
+                        "application/json";
+
+                    await context.Response.WriteAsJsonAsync(new
                     {
                         success = false,
                         message = ex.Message
-                    };
+                    });
 
-                    await context.Response.WriteAsJsonAsync(response);
+                    return;
+                }
+
+                if (ex is UnauthorizedException)
+                {
+                    context.Response.StatusCode =
+                        StatusCodes.Status401Unauthorized;
+
+                    context.Response.ContentType =
+                        "application/json";
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        success = false,
+                        message = ex.Message
+                    });
+
                     return;
                 }
 

@@ -9,40 +9,43 @@ namespace CheckMate.Application.Interfaces.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IJwtTokenService _jwtTokenService;
 
         public AuthService(
             IUserRepository userRepository,
-            IPasswordHasher passwordHasher)
+            IPasswordHasher passwordHasher,
+            IJwtTokenService jwtTokenService)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _jwtTokenService = jwtTokenService;
         }
 
         public async Task RegisterAdminAsync(RegisterAdminRequest request)
         {
-            // 1. Check whether SuperAdmin already exists
-            bool adminExists = await _userRepository.SuperAdminExistsAsync();
+            bool adminExists =
+                await _userRepository.SuperAdminExistsAsync();
 
             if (adminExists)
             {
-                throw new ConflictException("SuperAdmin already exists.");
+                throw new ConflictException(
+                    "SuperAdmin already exists.");
             }
 
-            // 2. Check whether email is already used
-            var existingUser = await _userRepository
-                .GetByEmailAsync(request.Email);
+            var existingUser =
+                await _userRepository.GetByEmailAsync(request.Email);
 
             if (existingUser != null)
             {
-                throw new ConflictException("Email is already registered.");
+                throw new ConflictException(
+                    "Email is already registered.");
             }
 
-            // 3. Hash password
             string passwordHash =
                 _passwordHasher.HashPassword(request.Password);
 
             var superAdminRole =
-    await _userRepository.GetRoleByNameAsync("SuperAdmin");
+                await _userRepository.GetRoleByNameAsync("SuperAdmin");
 
             if (superAdminRole == null)
             {
@@ -50,8 +53,6 @@ namespace CheckMate.Application.Interfaces.Services
                     "SuperAdmin role is not configured.");
             }
 
-            // 4. Create User entity
-         
             var user = new User
             {
                 FullName = request.FullName,
@@ -62,10 +63,39 @@ namespace CheckMate.Application.Interfaces.Services
                 RoleId = superAdminRole.Id
             };
 
-            // 5. Save user
             await _userRepository.AddAsync(user);
         }
 
+        public async Task<LoginResponse> LoginAsync(LoginRequest request)
+        {
+            var user =
+                await _userRepository.GetByEmailAsync(request.Email);
 
+            if (user == null)
+            {
+                throw new UnauthorizedException(
+                    "Invalid email or password.");
+            }
+
+            bool passwordValid =
+                _passwordHasher.VerifyPassword(
+                    request.Password,
+                    user.PasswordHash);
+
+            if (!passwordValid)
+            {
+                throw new UnauthorizedException(
+                    "Invalid email or password.");
+            }
+
+            string token =
+                _jwtTokenService.GenerateToken(user);
+
+            return new LoginResponse
+            {
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(60)
+            };
+        }
     }
 }
