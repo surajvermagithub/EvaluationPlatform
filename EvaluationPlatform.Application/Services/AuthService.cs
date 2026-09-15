@@ -1,9 +1,10 @@
 ﻿using CheckMate.Application.DTOs.Auth;
 using CheckMate.Application.Exceptions;
 using CheckMate.Application.Interfaces.Repositories;
+using CheckMate.Application.Interfaces.Services;
 using CheckMate.Domain.Entities;
 
-namespace CheckMate.Application.Interfaces.Services
+namespace CheckMate.Application.Services
 {
     public class AuthService : IAuthService
     {

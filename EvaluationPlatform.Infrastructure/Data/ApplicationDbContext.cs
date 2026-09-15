@@ -82,36 +82,40 @@ namespace CheckMate.Infrastructure.Data
                 .Property(r => r.Description)
                 .HasMaxLength(250);
 
+            modelBuilder.Entity<Role>()
+    .HasIndex(r => r.Name)
+    .IsUnique();
+
             // Seed initial roles
             modelBuilder.Entity<Role>().HasData(
-                new Role
-                {
-                    Id = 1,
-                    Name = "SuperAdmin",
-                    Description = "Super Administrator with full system access",
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedOn = DateTime.UtcNow
-                },
-                new Role
-                {
-                    Id = 2,
-                    Name = "Admin",
-                    Description = "Administrator with limited access",
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedOn = DateTime.UtcNow
-                },
-                new Role
-                {
-                    Id = 3,
-                    Name = "User",
-                    Description = "Regular user with basic access",
-                    IsActive = true,
-                    IsDeleted = false,
-                    CreatedOn = DateTime.UtcNow
-                }
-            );
+    new Role
+    {
+        Id = 1,
+        Name = "SuperAdmin",
+        Description = "Super Administrator with full system access",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    },
+    new Role
+    {
+        Id = 2,
+        Name = "Admin",
+        Description = "Institute administrator",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    },
+    new Role
+    {
+        Id = 3,
+        Name = "Teacher",
+        Description = "Teacher who evaluates examination booklets",
+        IsActive = true,
+        IsDeleted = false,
+        CreatedOn = new DateTime(2026, 1, 1)
+    }
+);
         }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using CheckMate.Application.Services;
 
 var projectDirectory = Directory.GetParent(
     AppContext.BaseDirectory)!
@@ -50,6 +51,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IInstituteRepository, InstituteRepository>();
+builder.Services.AddScoped<IInstituteService, InstituteService>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 
