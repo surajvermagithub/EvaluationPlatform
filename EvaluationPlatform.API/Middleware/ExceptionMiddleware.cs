@@ -65,6 +65,22 @@ namespace CheckMate.API.Middleware
 
                     return;
                 }
+                if (ex is NotFoundException)
+                {
+                    context.Response.StatusCode =
+                        StatusCodes.Status404NotFound;
+
+                    context.Response.ContentType =
+                        "application/json";
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        success = false,
+                        message = ex.Message
+                    });
+
+                    return;
+                }
 
                 await HandleExceptionAsync(context, ex, _logger);
             }           

@@ -6,6 +6,7 @@ namespace CheckMate.Application.Interfaces.Repositories
     {
         Task<bool> ExistsByCodeAsync(string code);
 
+        Task<Institute?> GetByIdAsync(int instituteId);
         Task<Institute> AddAsync(Institute institute);
     }
 }

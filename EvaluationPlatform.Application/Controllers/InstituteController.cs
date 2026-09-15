@@ -31,5 +31,19 @@ namespace CheckMate.Application.Controllers
                 message = "Institute created successfully."
             });
         }
+
+        [HttpPost("admin")]
+        public async Task<IActionResult> CreateInstituteAdmin(
+    CreateInstituteAdminRequest request)
+        {
+            await _instituteService
+                .CreateInstituteAdminAsync(request);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Institute admin created successfully."
+            });
+        }
     }
 }

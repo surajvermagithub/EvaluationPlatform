@@ -5,5 +5,9 @@ namespace CheckMate.Application.Interfaces.Services
     public interface IInstituteService
     {
         Task CreateInstituteAsync(CreateInstituteRequest request);
+
+
+        Task CreateInstituteAdminAsync(
+        CreateInstituteAdminRequest request);
     }
 }

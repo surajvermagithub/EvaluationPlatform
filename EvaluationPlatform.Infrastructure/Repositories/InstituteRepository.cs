@@ -22,6 +22,15 @@ namespace CheckMate.Infrastructure.Repositories
                     !i.IsDeleted);
         }
 
+        public async Task<Institute?> GetByIdAsync(int instituteId)
+        {
+            return await _context.Institutes
+                .FirstOrDefaultAsync(i =>
+                    i.Id == instituteId &&
+                    !i.IsDeleted &&
+                    i.IsActive);
+        }
+
         public async Task<Institute> AddAsync(Institute institute)
         {
             await _context.Institutes.AddAsync(institute);
