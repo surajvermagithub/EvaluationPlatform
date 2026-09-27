@@ -19,3 +19,6 @@ Thumbs.db
 
 # Local settings
 appsettings.local.json
+
+# .gitignore file mein add karo
+echo "SOP/" >> .gitignore
