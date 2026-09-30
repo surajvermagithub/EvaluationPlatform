@@ -181,8 +181,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173",                                  // Vite local dev server
-                "https://red-desert-0e9aef500.4.azurestaticapps.net"      // production frontend
+                "http://localhost:5173",                                  
+                "https://red-desert-0e9aef500.4.azurestaticapps.net"      
               )
               .AllowAnyMethod()
               .AllowAnyHeader();
