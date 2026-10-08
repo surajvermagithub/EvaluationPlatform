@@ -208,7 +208,9 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IInstituteRepository, InstituteRepository>();
 builder.Services.AddScoped<IInstituteService, InstituteService>();
+builder.Services.AddScoped<IExamRepository, ExamRepository>();
 
+builder.Services.AddScoped<IExamService, ExamService>();
 // ---- JWT Authentication ----
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 

@@ -16,6 +16,8 @@ namespace CheckMate.Infrastructure.Data
 
         public DbSet<Institute> Institutes => Set<Institute>();
 
+        public DbSet<Exam> Exams => Set<Exam>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -85,6 +87,32 @@ namespace CheckMate.Infrastructure.Data
             modelBuilder.Entity<Role>()
     .HasIndex(r => r.Name)
     .IsUnique();
+
+
+            modelBuilder.Entity<Exam>()
+       .HasOne(e => e.Institute)
+       .WithMany()
+       .HasForeignKey(e => e.InstituteId)
+       .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Exam>()
+                .HasIndex(e => e.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.Name)
+                .HasMaxLength(150)
+                .IsRequired();
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.Code)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            modelBuilder.Entity<Exam>()
+                .Property(e => e.Description)
+                .HasMaxLength(500);
+
 
             // Seed initial roles
             modelBuilder.Entity<Role>().HasData(
