@@ -15,5 +15,6 @@ namespace CheckMate.Domain.Entities
         public DateTime ExamDate { get; set; }
 
         public Institute Institute { get; set; } = null!;
+        public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
     }
 }

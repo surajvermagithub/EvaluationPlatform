@@ -17,6 +17,7 @@ namespace CheckMate.Infrastructure.Data
         public DbSet<Institute> Institutes => Set<Institute>();
 
         public DbSet<Exam> Exams => Set<Exam>();
+        public DbSet<Subject> Subjects => Set<Subject>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -112,6 +113,56 @@ namespace CheckMate.Infrastructure.Data
             modelBuilder.Entity<Exam>()
                 .Property(e => e.Description)
                 .HasMaxLength(500);
+
+
+
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.ToTable("Subjects", table =>
+                {
+                    table.HasCheckConstraint(
+                        "CK_Subject_MaximumMarks",
+                        "[MaximumMarks] > 0");
+
+                    table.HasCheckConstraint(
+                        "CK_Subject_PassingMarks",
+                        "[PassingMarks] >= 0 AND [PassingMarks] <= [MaximumMarks]");
+
+                    table.HasCheckConstraint(
+                        "CK_Subject_DisplayOrder",
+                        "[DisplayOrder] >= 0");
+                });
+
+                entity.Property(s => s.Name)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(s => s.Code)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(s => s.Description)
+                    .HasMaxLength(500);
+
+                entity.Property(s => s.MaximumMarks)
+                    .HasPrecision(18, 2);
+
+                entity.Property(s => s.PassingMarks)
+                    .HasPrecision(18, 2);
+
+                entity.HasOne(s => s.Exam)
+                    .WithMany(e => e.Subjects)
+                    .HasForeignKey(s => s.ExamId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(s => new { s.ExamId, s.Code })
+                    .IsUnique()
+                    .HasFilter("[IsDeleted] = 0");
+
+                entity.HasIndex(s => new { s.ExamId, s.Name })
+                    .IsUnique()
+                    .HasFilter("[IsDeleted] = 0");
+            });
 
 
             // Seed initial roles
