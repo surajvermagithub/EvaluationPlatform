@@ -228,6 +228,80 @@ namespace CheckMate.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CheckMate.Domain.Entities.Subject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("MaximumMarks")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("PassingMarks")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId", "Code")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("ExamId", "Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("Subjects", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Subject_DisplayOrder", "[DisplayOrder] >= 0");
+
+                            t.HasCheckConstraint("CK_Subject_MaximumMarks", "[MaximumMarks] > 0");
+
+                            t.HasCheckConstraint("CK_Subject_PassingMarks", "[PassingMarks] >= 0 AND [PassingMarks] <= [MaximumMarks]");
+                        });
+                });
+
             modelBuilder.Entity("CheckMate.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -299,6 +373,17 @@ namespace CheckMate.Infrastructure.Migrations
                     b.Navigation("Institute");
                 });
 
+            modelBuilder.Entity("CheckMate.Domain.Entities.Subject", b =>
+                {
+                    b.HasOne("CheckMate.Domain.Entities.Exam", "Exam")
+                        .WithMany("Subjects")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+                });
+
             modelBuilder.Entity("CheckMate.Domain.Entities.User", b =>
                 {
                     b.HasOne("CheckMate.Domain.Entities.Institute", "Institute")
@@ -315,6 +400,11 @@ namespace CheckMate.Infrastructure.Migrations
                     b.Navigation("Institute");
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("CheckMate.Domain.Entities.Exam", b =>
+                {
+                    b.Navigation("Subjects");
                 });
 
             modelBuilder.Entity("CheckMate.Domain.Entities.Institute", b =>
