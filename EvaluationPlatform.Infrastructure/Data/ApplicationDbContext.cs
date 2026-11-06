@@ -19,6 +19,8 @@ namespace CheckMate.Infrastructure.Data
         public DbSet<Exam> Exams => Set<Exam>();
         public DbSet<Subject> Subjects => Set<Subject>();
 
+        public DbSet<Student> Students => Set<Student>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -164,6 +166,44 @@ namespace CheckMate.Infrastructure.Data
                     .HasFilter("[IsDeleted] = 0");
             });
 
+            modelBuilder.Entity<Student>(entity =>
+            {
+                entity.ToTable("Students");
+
+                entity.Property(s => s.FullName)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(s => s.AdmissionNumber)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(s => s.Email)
+                    .HasMaxLength(150);
+
+                entity.Property(s => s.Mobile)
+                    .HasMaxLength(15)
+                    .IsRequired();
+
+                entity.Property(s => s.Gender)
+                    .HasMaxLength(30);
+
+                entity.Property(s => s.Address)
+                    .HasMaxLength(500);
+
+                entity.HasOne(s => s.Institute)
+                    .WithMany(i => i.Students)
+                    .HasForeignKey(s => s.InstituteId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(s => new
+                {
+                    s.InstituteId,
+                    s.AdmissionNumber
+                })
+                    .IsUnique()
+                    .HasFilter("[IsDeleted] = 0");
+            });
 
             // Seed initial roles
             modelBuilder.Entity<Role>().HasData(

@@ -212,6 +212,8 @@ builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IExamService, ExamService>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 // ---- JWT Authentication ----
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 

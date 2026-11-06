@@ -26,5 +26,7 @@ namespace CheckMate.Domain.Entities
 
         // Navigation Property
         public ICollection<User> Users { get; set; } = new List<User>();
+
+        public ICollection<Student> Students { get; set; } = new List<Student>();
     }
 }

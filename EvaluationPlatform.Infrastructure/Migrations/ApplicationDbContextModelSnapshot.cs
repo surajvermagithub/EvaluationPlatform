@@ -228,6 +228,74 @@ namespace CheckMate.Infrastructure.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CheckMate.Domain.Entities.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("AdmissionNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("InstituteId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Mobile")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstituteId", "AdmissionNumber")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("Students", (string)null);
+                });
+
             modelBuilder.Entity("CheckMate.Domain.Entities.Subject", b =>
                 {
                     b.Property<int>("Id")
@@ -373,6 +441,17 @@ namespace CheckMate.Infrastructure.Migrations
                     b.Navigation("Institute");
                 });
 
+            modelBuilder.Entity("CheckMate.Domain.Entities.Student", b =>
+                {
+                    b.HasOne("CheckMate.Domain.Entities.Institute", "Institute")
+                        .WithMany("Students")
+                        .HasForeignKey("InstituteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Institute");
+                });
+
             modelBuilder.Entity("CheckMate.Domain.Entities.Subject", b =>
                 {
                     b.HasOne("CheckMate.Domain.Entities.Exam", "Exam")
@@ -409,6 +488,8 @@ namespace CheckMate.Infrastructure.Migrations
 
             modelBuilder.Entity("CheckMate.Domain.Entities.Institute", b =>
                 {
+                    b.Navigation("Students");
+
                     b.Navigation("Users");
                 });
 
